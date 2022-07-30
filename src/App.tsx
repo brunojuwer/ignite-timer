@@ -1,16 +1,15 @@
-import { Button } from './components/Button'
 import { ThemeProvider } from 'styled-components'
 import { defaultTheme } from './styles/themes/default'
 import { GlobalStyle } from './styles/global'
+import { BrowserRouter } from 'react-router-dom'
+import { Router } from './Router'
 
 export function App() {
-  const buttons: number[] = [1, 2, 3, 4, 5, 6]
-
   return (
     <ThemeProvider theme={defaultTheme}>
-      {buttons.map((button) => (
-        <Button key={button} />
-      ))}
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
       <GlobalStyle />
     </ThemeProvider>
   )
