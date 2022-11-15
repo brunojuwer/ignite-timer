@@ -21,21 +21,23 @@ const newCycleFormSchema = zod.object({
     .max(60, 'O ciclo precisa ter no máximo 60 minutos'),
 })
 
+// utilizando a tipagem com o zod
+type NewCycleFormValidation = zod.infer<typeof newCycleFormSchema>
+
 export function Home() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(newCycleFormSchema),
-  })
+  const { register, handleSubmit, watch, reset } =
+    useForm<NewCycleFormValidation>({
+      resolver: zodResolver(newCycleFormSchema),
+      defaultValues: {
+        task: '',
+        minutesAmount: 0,
+      },
+    })
 
-  function handleCreateNewCycle(data: any) {
+  function handleCreateNewCycle(data: NewCycleFormValidation) {
     console.log(data)
+    reset()
   }
-
-  console.log(errors) // pega as mensagens de erro definidas em min e max
 
   const task = watch('task')
   const isSubmitDisabled = !task
