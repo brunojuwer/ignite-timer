@@ -12,6 +12,7 @@ import {
   StartCountdownButton,
   TaskNameInput,
   MinutesAmountInput,
+  StopCountdownButton,
 } from './styles'
 import { useEffect, useState } from 'react'
 
@@ -31,6 +32,7 @@ interface Cycle {
   task: string
   minutesAmount: number
   startDate: Date
+  interruptedDate?: Date
 }
 
 export function Home() {
@@ -49,21 +51,28 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate),
+        const differenceSeconds = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate,
         )
+
+        if (differenceSeconds >= totalSeconds) {
+        }
+        setAmountSecondsPassed(differenceSeconds)
       }, 1000)
     }
 
     return () => {
       clearInterval(interval)
     }
-  }, [activeCycle])
+  }, [activeCycle, totalSeconds])
 
   function handleCreateNewCycle(data: NewCycleFormValidation) {
     const id = String(new Date().getTime())
@@ -81,7 +90,20 @@ export function Home() {
     reset()
   }
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+  function handleInterruptCycle() {
+    setActiveCycleId(null)
+
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return { ...cycle, interruptedDate: new Date() }
+        } else {
+          return cycle
+        }
+      }),
+    )
+  }
+
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
@@ -110,6 +132,7 @@ export function Home() {
             id="task"
             list="task-suggestions"
             placeholder="De um nome para o seu projeto"
+            disabled={!!activeCycle}
             {...register('task')}
           />
 
@@ -127,6 +150,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            disabled={!!activeCycle}
             {...register('minutesAmount', { valueAsNumber: true })}
           />
 
@@ -142,7 +166,7 @@ export function Home() {
         </CountDownContainer>
 
         {activeCycle ? (
-          <StopCountdownButton type="button">
+          <StopCountdownButton type="button" onClick={handleInterruptCycle}>
             <HandPalm size={24} />
             Interromeper
           </StopCountdownButton>
