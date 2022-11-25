@@ -42,6 +42,17 @@ export const HistoryList = styled.div`
       }
     }
 
+    /* tbody {
+      display: flex;
+      flex-direction: column-reverse;
+      max-width: 992px;
+      width: inherit;
+
+      tr {
+        width: 100%;
+      }
+    } */
+
     td {
       background-color: ${(props) => props.theme['gray-700']};
       border-top: 4px solid ${(props) => props.theme['gray-800']};
